@@ -1,0 +1,3 @@
+[submodule "ltfatpy/ltfat"]
+	path = ltfatpy/ltfat
+	url = https://github.com/ltfat/ltfat.git
