@@ -1,3 +1,6 @@
-[submodule "ltfatpy/ltfat"]
+[submodule "ltfatpy/octave/ltfat"]
 	path = ltfatpy/ltfat
 	url = https://github.com/ltfat/ltfat.git
+[submodule "ltfatpy/cstyle/libltfat"]
+	path = libltfat
+	url = https://github.com/ltfat/libltfat.git
