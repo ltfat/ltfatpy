@@ -17,3 +17,5 @@ def compile_oct_files():
    # dst_path = r"./octave/ltfat/oct/libltfat.a"
    # shutil.copy(src_path, dst_path)
    # print('Copied libltfat.a ')
+
+compile_oct_files()
