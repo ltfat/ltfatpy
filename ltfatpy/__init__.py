@@ -23,6 +23,8 @@ from oct2py import octave
 #    "get_log",
 #]
 
+#class ltfat()
+
 try:
     os.chdir('./ltfatpy/ltfat')
     octave = Oct2Py()
