@@ -9,25 +9,25 @@ from oct2py.speed_check import speed_check
 from oct2py.thread_check import thread_check
 from oct2py import octave
 
-__all__ = [
-    "Oct2Py",
-    "Oct2PyError",
-    "octave",
-    "Struct",
-    "Cell",
-    "StructArray",
-    "demo",
-    "speed_check",
-    "thread_check",
-    "__version__",
-    "get_log",
-]
+#__all__ = [
+#    "Oct2Py",
+#    "Oct2PyError",
+#    "octave",
+#    "Struct",
+#    "Cell",
+#    "StructArray",
+#    "demo",
+#    "speed_check",
+#    "thread_check",
+#    "__version__",
+#    "get_log",
+#]
 
 try:
     os.chdir('./ltfatpy/ltfat')
     octave = Oct2Py()
     octave.eval('warning ("off", "all");')
-    octave.eval('ltfatstart')
+    octave.eval('ltfatpystart')
     #octave.eval('warning ("on", "all");')
 except Oct2PyError as e:
     print(e)  # noqa
