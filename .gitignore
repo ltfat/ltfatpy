@@ -36,3 +36,11 @@ old_*
 # Ignore spurious files form testing/testC
 /testing/testC/*.out*
 /testing/testC/*.log
+
+__pycache__/
+build/
+dist/
+ltfatpy.egg-info/
+setup/build/
+setup/config.log
+../.ipynb_checkpoints/

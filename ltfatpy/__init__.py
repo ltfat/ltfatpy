@@ -26,11 +26,14 @@ from oct2py import octave
 #class ltfat()
 
 try:
-    os.chdir('./ltfatpy/ltfat')
+    bp = os.path.basename(os.path.dirname(__file__))
+    target_path = os.path.join(bp, './octave/ltfat')
+    os.chdir(target_path)
     octave = Oct2Py()
     octave.eval('warning ("off", "all");')
     octave.eval('ltfatpystart')
-    #octave.eval('warning ("on", "all");')
+    ltfat = octave
+    octave.eval('warning ("on", "all");')
 except Oct2PyError as e:
     print(e)  # noqa
 
