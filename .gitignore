@@ -44,3 +44,4 @@ ltfatpy.egg-info/
 setup/build/
 setup/config.log
 ../.ipynb_checkpoints/
+ltfatpy/setup/config.log

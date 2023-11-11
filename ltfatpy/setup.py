@@ -1,5 +1,5 @@
 from distutils.core import setup
-import subprocess
+from subprocess import Popen, PIPE
 import shutil
 
 setup(
@@ -11,12 +11,16 @@ setup(
 )
 
 def compile_oct_files():
-    #subprocess.Popen(["./configure"], stdout=subprocess.PIPE, cwd="./setup")
-    subprocess.Popen(["make"], stdout=subprocess.PIPE, cwd="./setup")
+    process = Popen(["./configure"], stdout=PIPE, cwd="./setup")
    # src_path = r"./libltfat/build/libltfat.a"
    # dst_path = r"./octave/ltfat/oct/libltfat.a"
    # shutil.copy(src_path, dst_path)
    # print('Copied libltfat.a ')
+    stdout, stderr = process.communicate()
+    print(stdout)
+    process = Popen(["make"], stdout=PIPE, cwd="./setup")
+    stdout, stderr = process.communicate()
+    print(stdout)
 
 def main():
     compile_oct_files()
