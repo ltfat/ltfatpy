@@ -20,15 +20,16 @@ from oct2py import octave
 #    "speed_check",
 #    "thread_check",
 #    "__version__",
-#    "get_log",
+#    "get_log",os.chdi
 #]
 
 #class ltfat()
 
 try:
     bp = os.path.basename(os.path.dirname(__file__))
-    target_path = os.path.join(bp, './octave/ltfat')
-    os.chdir(target_path)
+    print(bp)
+    target_path = os.path.join(bp, 'ltfatpy/octave/ltfat')
+    os.chdir('/home/clara/Documents/ltfat_development_code/ltfatpy/ltfatpy/octave/ltfat')
     octave = Oct2Py()
     octave.eval('warning ("off", "all");')
     octave.eval('ltfatpystart')
