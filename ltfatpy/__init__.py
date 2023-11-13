@@ -27,14 +27,14 @@ from oct2py import octave
 
 try:
     bp = os.path.basename(os.path.dirname(__file__))
-    print(bp)
-    target_path = os.path.join(bp, 'ltfatpy/octave/ltfat')
-    os.chdir('/home/clara/Documents/ltfat_development_code/ltfatpy/ltfatpy/octave/ltfat')
+    target_path = os.path.join(bp, 'octave/ltfat')
+    os.chdir(target_path)
     octave = Oct2Py()
     octave.eval('warning ("off", "all");')
     octave.eval('ltfatpystart')
+    os.chdir(os.path.dirname(__file__))
     ltfat = octave
-    octave.eval('warning ("on", "all");')
+    #octave.eval('warning ("on", "all");')
 except Oct2PyError as e:
     print(e)  # noqa
 

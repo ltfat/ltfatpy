@@ -1,13 +1,9 @@
 import numpy as numpy
 import oct2py as oct
-import os
-#bp = os.path.basename(os.path.dirname(__file__))
-#os.chdir('..')
-#print(os.getcwd())
-#target_path = os.path.join(os.getcwd(), 'ltfatpy')
-#os.chdir(target_path)
-import sys
-sys.path.insert(0, "..")
+import os, sys
+bp = os.path.basename(os.path.dirname(__file__))
+target_path = os.path.join(bp, '..')
+sys.path.insert(0,target_path)
 from ltfatpy import ltfat
 
 Lr=[24,16,144,108,144,24,135,35,77,20]
