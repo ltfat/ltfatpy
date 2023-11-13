@@ -26,7 +26,7 @@ from oct2py import octave
 #class ltfat()
 
 try:
-    bp = os.path.basename(os.path.dirname(__file__))
+    bp = os.path.dirname(__file__)
     target_path = os.path.join(bp, 'octave/ltfat')
     os.chdir(target_path)
     octave = Oct2Py()
