@@ -1,9 +1,10 @@
 import numpy as numpy
 #import oct2py as oct
 import os, sys
-bp = os.path.basename(os.path.dirname(__file__))
-os.chdir('..')
+
+bp = os.path.dirname(__file__)
 target_path = os.path.join(bp, '..')
+print(target_path)
 sys.path.insert(0,target_path)
 from ltfatpy import ltfat
 
@@ -24,7 +25,7 @@ for rtype in range(2):
  
  #   global LTFAT_TEST_TYPE;
     if ltfat.strcmpi(LTFAT_TEST_TYPE,'single'):
-        C = ltfat.gabframebounds(g,ar,Mr);
+        C = ltfat.gabframebounds(g,ar,Mr)
         while C>1e3:
            #  oct.warning(oct.sprintf(['The frame is too badly conditioned '...
            #                   'for single precision. Cond. num. %d. '...
