@@ -1,7 +1,8 @@
 import numpy as numpy
-import oct2py as oct
+#import oct2py as oct
 import os, sys
 bp = os.path.basename(os.path.dirname(__file__))
+os.chdir('..')
 target_path = os.path.join(bp, '..')
 sys.path.insert(0,target_path)
 from ltfatpy import ltfat
