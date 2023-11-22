@@ -1,5 +1,5 @@
 from oct2py.utils import Oct2PyError
-from .ltfatpycore import Ltfat
+from .modules import Ltfat
 
 
 try:
