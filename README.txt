@@ -1,4 +1,4 @@
-The repository is per definition under development. Hence, everything written here is temporary per definition.
+The repository is under development. Hence, everything written here is temporary per definition.
 
 Current requirements:
 
