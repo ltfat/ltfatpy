@@ -85,6 +85,8 @@ class Ltfat():
         backend=None,
     ):
         """Start Octave and set up the session."""
+        print("Setting up your Octave session in the background. This may take a while...")
+        
         self._oned_as = oned_as
         self._engine = None
         self._logger = None
@@ -577,7 +579,7 @@ def get_log(name=None):
 
 class LtfatError(Exception):
     """Called when we can't open Octave or Octave throws an error"""
-    sys.tracebacklimit = 0 #TODO: find a neater solution here
+    #sys.tracebacklimit = 0 #TODO: find a neater solution here
     pass
 
 
