@@ -1,8 +1,7 @@
-#Code adapted from https://www.qtrac.eu/pyclassmulti.html .
 import inspect 
 import collections 
 
-
+#Function adapted from https://www.qtrac.eu/pyclassmulti.html .
 def register_method(methods):
     def register_method(method):
         methods.append(method)
@@ -18,11 +17,6 @@ register_method = register_method(__methods__)
 #Gabor systems
 @register_method
 def dgt(self, f, g, a, M, nout = 1):
-    #txt = "g = {};"
-    #txt.format(g)
-    #self.eval(txt)
-    #print("WE ARe there")
-    #print(inspect.signature(collections.Counter)) 
     argg = inspect.getfullargspec(dgt)
     inargs = argg[0]
     c = self.feval(inargs, 'dgt', f, g, a, M, nout)

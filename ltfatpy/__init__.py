@@ -8,8 +8,10 @@ from oct2py.dynamic import (
     _make_user_class,
     _make_variable_ptr_instance,
 )
+#the IO management is largely taken from oct2py as well...
+from .io import Cell, StructArray, read_file, write_file
 
-#these are all Python default libs...
+#these are all Python standard libs...
 import atexit
 import logging
 import os, sys
@@ -18,19 +20,13 @@ import shutil
 import tempfile
 import warnings
 
-from .io import Cell, StructArray, read_file, write_file
-
-#numpy is here only used to store the function input arguments in an array.
-#we could theoretically get rid of it here, but it is still a crucial dependency
-#for IO handling => since it's already there, we may as well use it
+#numpy is a key dependency of ltfatpy
 import numpy as np
-#metakernel (more specifically: pexpect) is for spawning the Octave-subprocess as a
-#child of the Python session. replacing it with something written in C likely yields
-#gains in execution speed.
+#metakernel (more specifically: pexpect) handles the spawning of the Octave session
+#as a subprocess of the Python session
 from metakernel.pexpect import EOF, TIMEOUT  # type:ignore[import-untyped]
-#the OctaveEngine is the same as for Jupyter. as for the STDIN_PROMPT, we do not really use
-#it at the moment. Let's see what happens there.
-from octave_kernel.kernel import STDIN_PROMPT, OctaveEngine  # type:ignore[import-untyped]
+#the OctaveEngine is the same as for Jupyter
+from octave_kernel.kernel import OctaveEngine
 
 bp = os.path.dirname(os.path.dirname(__file__))
 filepath = os.path.join(bp, 'ltfatpy')
@@ -117,10 +113,6 @@ class Ltfat():
         if self._engine:
             self._engine.logger = self._logger
 
-    def _handle_stdin(self, line):
-        """Handle a stdin request from the session."""
-        return input(line.replace(STDIN_PROMPT, ""))
-
     def __getattr__(self, attr):
         
         if attr in self.__dict__:
@@ -157,7 +149,7 @@ class Ltfat():
             os.environ["OCTAVE_EXECUTABLE"] = os.environ["OCTAVE"]
 
         try:
-            self._engine = OctaveEngine(stdin_handler=self._handle_stdin, logger=self.logger)
+            self._engine = OctaveEngine(logger=self.logger)
         except Exception as e:
             raise LtfatError(str(e)) from None
 
@@ -255,18 +247,18 @@ class Ltfat():
         plot_dir = kwargs.get("plot_dir")
 
         # Choose appropriate plot backend.
-        default_backend = "inline" if plot_dir else self.backend
-        backend = kwargs.get("plot_backend", default_backend)
+        #default_backend = "inline" if plot_dir else self.backend
+        #backend = kwargs.get("plot_backend", default_backend)
 
-        settings = dict(
-            backend=backend,
-            format=kwargs.get("plot_format"),
-            name=kwargs.get("plot_name"),
-            width=kwargs.get("plot_width"),
-            height=kwargs.get("plot_height"),
-            resolution=kwargs.get("plot_res"),
-        )
-        self._engine.plot_settings = settings
+        #settings = dict(
+        #    backend=backend,
+        #    format=kwargs.get("plot_format"),
+        #    name=kwargs.get("plot_name"),
+        #    width=kwargs.get("plot_width"),
+        #    height=kwargs.get("plot_height"),
+        #    resolution=kwargs.get("plot_res"),
+        #)
+        #self._engine.plot_settings = settings
 
         dname = osp.dirname(func_path)
         fname = osp.basename(func_path)
@@ -478,12 +470,6 @@ class Ltfat():
                 func_args[i] = value.address
         ref_arr = np.array(ref_indices)
 
-                #print(func_args)
-        #for val in tuple(func_args):
-        #    print(type(val))
-            #if isinstance(val, str):
-            #    print("here")
-
         # Save the request data to the output file.
         req = dict(
             func_name=func_name,
@@ -494,15 +480,11 @@ class Ltfat():
             ref_indices=ref_arr,
             inargs = inargs[1:len(inargs)-1],
         )
-        #print(func_args)
+
         func_dict = dict(zip(inargs[1:len(inargs)], func_args))
         
         req.update(func_dict)
-        #print(req)
-        #print(inargs[1:len(inargs)])
-        #req = create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_arr)
-        #req = make_dict(func_name, func_args, inargs, dname, nout, store_as, ref_arr)
-        #print(req)
+
         write_file(req, out_file, oned_as=self._oned_as, convert_to_float=self.convert_to_float)
 
         # Set up the engine and evaluate the `_pyeval()` function.
@@ -593,58 +575,11 @@ def get_log(name=None):
     return log
 
 
-#req = create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_indices)
-#def create_dict_with_lists(input_list):
-def create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_indices):
-    result_dict = {}
-    current_list = []
-    current_index = 0
-
-    result_dict["func_name"] = func_name
-    for value in func_args:
-        if isinstance(value, str):
-            # If a string is found, create a dictionary entry
-            result_dict[f"index_{current_index}"] = tuple(current_list)
-            result_dict[f"string_{current_index}"] = value
-            current_list = []  # Reset the list for the next string
-            current_index += 1
-        else:
-            # If not a string, add to the current list
-            current_list.append(value)
-
-        if not isinstance(func_args[-1], str):
-            result_dict[f"index_{current_index}"] = current_list
-
-    result_dict["dname"] = dname or ""
-    result_dict["nout"] = nout
-    result_dict["dname"] = store_as or ""
-    result_dict["ref_indices"] = ref_indices
-
-    return result_dict
-
-#def make_dict(func_name, func_args, inargs, dname, nout, store_as, ref_arr):
-
-
-        #req = dict(
-        #    func_name=func_name,
-        #    func_args=tuple(func_args),
-        #    dname=dname or "",
-        #    nout=nout,
-        #    store_as=store_as or "",
-        #    ref_indices=ref_arr,
-        #)
-
 class LtfatError(Exception):
     """Called when we can't open Octave or Octave throws an error"""
-    #sys.tracebacklimit = 0
+    sys.tracebacklimit = 0 #TODO: find a neater solution here
     pass
 
-#def add_functions_as_methods(functions):
-#    def decorator(Class):
-#        for function in functions:
-#            setattr(Class, function.__name__, function)
-#        return Class
-#    return decorator
 
 try:
     ltfat = Ltfat()
