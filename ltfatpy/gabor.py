@@ -1,4 +1,7 @@
 #Code adapted from https://www.qtrac.eu/pyclassmulti.html .
+import inspect 
+import collections 
+
 
 def register_method(methods):
     def register_method(method):
@@ -14,8 +17,15 @@ register_method = register_method(__methods__)
 
 #Gabor systems
 @register_method
-def dgt(self, f, g, a, M, lt = [0, 1], phase = 'freqinv', nout = 1):
-    [c, L] = self.feval('dgt', f, g, a, M, lt, phase, nout)
+def dgt(self, f, g, a, M, nout = 1):
+    #txt = "g = {};"
+    #txt.format(g)
+    #self.eval(txt)
+    #print("WE ARe there")
+    #print(inspect.signature(collections.Counter)) 
+    argg = inspect.getfullargspec(dgt)
+    inargs = argg[0]
+    c = self.feval(inargs, 'dgt', f, g, a, M, nout)
     if nout == 1:
         return c
     else:

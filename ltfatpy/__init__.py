@@ -1,8 +1,15 @@
-#Adapted from the oct2py project
+#The code in this file was largely adapted from the oct2py project.
 
-from oct2py.io import Cell, StructArray, read_file, write_file
-#from oct2py import Oct2Py
+#Using IO management from oct2py...
+#from oct2py.io import Cell, StructArray, read_file#, write_file
+from oct2py.dynamic import (
+    OctavePtr,
+    _make_function_ptr_instance,
+    _make_user_class,
+    _make_variable_ptr_instance,
+)
 
+#these are all Python default libs...
 import atexit
 import logging
 import os, sys
@@ -11,15 +18,18 @@ import shutil
 import tempfile
 import warnings
 
-from oct2py.dynamic import (
-    OctavePtr,
-    _make_function_ptr_instance,
-    _make_user_class,
-    _make_variable_ptr_instance,
-)
+from .io import Cell, StructArray, read_file, write_file
 
+#numpy is here only used to store the function input arguments in an array.
+#we could theoretically get rid of it here, but it is still a crucial dependency
+#for IO handling => since it's already there, we may as well use it
 import numpy as np
+#metakernel (more specifically: pexpect) is for spawning the Octave-subprocess as a
+#child of the Python session. replacing it with something written in C likely yields
+#gains in execution speed.
 from metakernel.pexpect import EOF, TIMEOUT  # type:ignore[import-untyped]
+#the OctaveEngine is the same as for Jupyter. as for the STDIN_PROMPT, we do not really use
+#it at the moment. Let's see what happens there.
 from octave_kernel.kernel import STDIN_PROMPT, OctaveEngine  # type:ignore[import-untyped]
 
 bp = os.path.dirname(os.path.dirname(__file__))
@@ -156,9 +166,11 @@ class Ltfat():
         filepath = os.path.join(bp, 'ltfatpy', 'octave', 'ltfat')
         sys.path.append(filepath)
         self._engine.eval('addpath("%s");' % filepath)
+        self._engine.eval('addpath("%s");' % self.temp_dir)
+        self._engine.eval('warning ("off", "all");')
         self._engine.eval("ltfatpystart")
 
-    def feval(self, func_path, *func_args, **kwargs):
+    def feval(self, inargs, func_path, *func_args, **kwargs):
         """Run a function in Octave and return the result.
 
         Parameters
@@ -273,8 +285,8 @@ class Ltfat():
         timeout = kwargs.get("timeout", self.timeout)
         if not stream_handler:
             stream_handler = self.logger.info if verbose else self.logger.debug
-
-        return self._feval(
+        
+        return self._feval( inargs,
             func_name,
             func_args,
             dname=dname,
@@ -435,7 +447,7 @@ class Ltfat():
         return ans
 
     def _feval(  # noqa
-        self,
+        self, inargs,
         func_name,
         func_args=(),
         dname="",
@@ -458,6 +470,7 @@ class Ltfat():
         in_file = in_file.replace(osp.sep, "/")
 
         func_args = list(func_args)
+
         ref_indices = []
         for i, value in enumerate(func_args):
             if isinstance(value, OctavePtr):
@@ -465,16 +478,31 @@ class Ltfat():
                 func_args[i] = value.address
         ref_arr = np.array(ref_indices)
 
+                #print(func_args)
+        #for val in tuple(func_args):
+        #    print(type(val))
+            #if isinstance(val, str):
+            #    print("here")
+
         # Save the request data to the output file.
         req = dict(
             func_name=func_name,
-            func_args=tuple(func_args),
+        #    func_args=tuple(func_args),
             dname=dname or "",
             nout=nout,
             store_as=store_as or "",
             ref_indices=ref_arr,
+            inargs = inargs[1:len(inargs)-1],
         )
-
+        #print(func_args)
+        func_dict = dict(zip(inargs[1:len(inargs)], func_args))
+        
+        req.update(func_dict)
+        #print(req)
+        #print(inargs[1:len(inargs)])
+        #req = create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_arr)
+        #req = make_dict(func_name, func_args, inargs, dname, nout, store_as, ref_arr)
+        #print(req)
         write_file(req, out_file, oned_as=self._oned_as, convert_to_float=self.convert_to_float)
 
         # Set up the engine and evaluate the `_pyeval()` function.
@@ -483,7 +511,7 @@ class Ltfat():
             timeout = self.timeout
 
         try:
-            engine.eval(f'_pyeval("{in_file}", "{out_file}");', timeout=timeout)
+            engine.eval(f'_ltfatpyeval("{in_file}", "{out_file}");', timeout=timeout)
         except KeyboardInterrupt:
             stream_handler(engine.repl.interrupt())
             raise
@@ -565,10 +593,50 @@ def get_log(name=None):
     return log
 
 
+#req = create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_indices)
+#def create_dict_with_lists(input_list):
+def create_dict_with_lists(func_name, func_args, dname, nout, store_as, ref_indices):
+    result_dict = {}
+    current_list = []
+    current_index = 0
+
+    result_dict["func_name"] = func_name
+    for value in func_args:
+        if isinstance(value, str):
+            # If a string is found, create a dictionary entry
+            result_dict[f"index_{current_index}"] = tuple(current_list)
+            result_dict[f"string_{current_index}"] = value
+            current_list = []  # Reset the list for the next string
+            current_index += 1
+        else:
+            # If not a string, add to the current list
+            current_list.append(value)
+
+        if not isinstance(func_args[-1], str):
+            result_dict[f"index_{current_index}"] = current_list
+
+    result_dict["dname"] = dname or ""
+    result_dict["nout"] = nout
+    result_dict["dname"] = store_as or ""
+    result_dict["ref_indices"] = ref_indices
+
+    return result_dict
+
+#def make_dict(func_name, func_args, inargs, dname, nout, store_as, ref_arr):
+
+
+        #req = dict(
+        #    func_name=func_name,
+        #    func_args=tuple(func_args),
+        #    dname=dname or "",
+        #    nout=nout,
+        #    store_as=store_as or "",
+        #    ref_indices=ref_arr,
+        #)
 
 class LtfatError(Exception):
     """Called when we can't open Octave or Octave throws an error"""
-
+    #sys.tracebacklimit = 0
     pass
 
 #def add_functions_as_methods(functions):
