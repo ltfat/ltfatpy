@@ -86,7 +86,7 @@ class Ltfat():
     ):
         """Start Octave and set up the session."""
         print("Setting up your Octave session in the background. This may take a while...")
-        
+
         self._oned_as = oned_as
         self._engine = None
         self._logger = None
@@ -162,7 +162,7 @@ class Ltfat():
         self._engine.eval('addpath("%s");' % filepath)
         self._engine.eval('addpath("%s");' % self.temp_dir)
         self._engine.eval('warning ("off", "all");')
-        self._engine.eval("ltfatpystart")
+        self._engine.eval("pkg load ltfat")
 
     def feval(self, inargs, func_path, *func_args, **kwargs):
         """Run a function in Octave and return the result.

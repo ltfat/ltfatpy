@@ -1,5 +1,5 @@
 function _ltfatpyeval(output_file, input_file)
-% _PYEVAL: Load a request from an input file, execute the request, and save
+% _LTFATPYEVAL: Load a request from an input file, execute the request, and save
 %         the response to the output file.
 %
 %   This allows you to run any Octave code. req should be a struct with the
@@ -22,7 +22,37 @@ sentinel = { '__no_value__' };
 result = { sentinel };
 err = '';
 
-load("writer.mat")
+
+load("writer.mat");
+
+%check if there are any strings that should be interpreted as cell arrays
+variables = whos;
+
+%pderiv = pderivs;
+%disp(size(pderivs))
+%clear pderivs;
+%pderivs{1} = pderiv;
+%pderivs{2} = pderiv;
+%pderivs{3} = pderiv;
+%pderivs{4} = pderiv;
+%pderivs{5} = pderiv;
+
+%pderivs = num2cell(pderivs);
+for ii = 1:numel(variables)
+    if ischar(variables(ii).class)
+        %evaluate each char in the workspace
+        variables(ii).name = eval(variables(ii).name);
+        if ~isempty(variables(ii).name) && strcmp(variables(ii).name(1), '{')
+            %and if it has braces at the beginning, convert it to a cell
+            %array
+            variables(ii).name = cellstr(variables(ii).name);
+            variables(ii).name = variables(ii).name{1};
+            class(variables(ii).name)
+        end
+
+    end
+end
+
 
 in_args = strjoin(inargs, ',');
 [result{1:nout}]=eval(strcat(func_name, '(', in_args, ')'));

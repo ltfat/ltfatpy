@@ -1,5 +1,16 @@
-#prerequisites: numpy, scipy, oct2py (for now), Octave installed
+#prerequisites: numpy, scipy, oct2py (for now), 
+# Octave with LTFAT 2.6.0 installed (but then you still lack a few functions...)
 #matplotlib is not required, but useful
+
+#syntax differences to Octave-LTFAT:
+# - when you pass cell arrays as input arguments, you need to pass them as strings
+#   e.g. gabwin({'tight','gauss'},a,M,L); => ltfat.gabwin("{'tight','gauss'}",a,M,L);
+
+#currently not supported:
+# - optional/variable input arguments
+# - variable output arguments
+# - alpha-version: cell array input
+
 from ltfatpy import ltfat
 import numpy as np
 from numpy import linalg as LA
@@ -74,22 +85,20 @@ f_2D = ltfat.idgt2(c_2D, win, a)
 
 #...and we can invert the absolute values of the coefficients.
 #these calculations take a while...
-#f_iter_cpx = ltfat.isgram(s_cpx, g, a)
-#f_iter_real = ltfat.isgramreal(np.abs(c_real), g, a, M)
+f_iter_cpx = ltfat.isgram(s_cpx, g, a)
+f_iter_real = ltfat.isgramreal(np.abs(c_real), g, a, M)
 
-#print(LA.norm(f_real-f_iter_real, 2))
-#print(LA.norm(f_cpx-f_iter_cpx, 2))
+print(LA.norm(f_real-f_iter_real, 2))
+print(LA.norm(f_cpx-f_iter_cpx, 2))
 
 #we can not yet generate a sparse Gabor-style representation...
-#(because I have not yet found a way to neatly parse the dictionaries)
+#(because the dictionaries are as of yet not correctly interpreted -> rewrite in Octave)
 
-#dicts = {{'hann',128,512},
-#    {'hann',128,512,'tria',64,256},
-#    {'hann',128,512,'tria',64,256,'tria',256,1024}
-#    }
+#dicts = "{{'hann',128,512}, {'hann',128,512,'tria',64,256}, {'hann',128,512,'tria',64,256,'tria',256,1024}}"
+#dicts = [['hann',128,512], ['hann',128,512,'tria',64,256], ['hann',128,512,'tria',64,256,'tria',256,1024]]
 #errdb = -40
 #maxit = 100
-#c_sparse  = multidgtrealmp(self, f, dicts, errdb, maxit, nout = 3)
+#c_sparse  = ltfat.multidgtrealmp(f_real, dicts, errdb, maxit)
 
 #...but in the absence of iterative methods, it may be difficult to invert.
 
@@ -159,24 +168,48 @@ plt.plot(fgrad)
 plt.xlabel('Frequency gradient')
 plt.show()
 
-dflag = 'tf'
+dflag = ['t', 'f', 'tt', 'ff', 'tf']
 phased_cpx = ltfat.gabphasederiv(dflag, method, f_cpx, g, a, M)
 phased_real = ltfat.gabphasederivreal(dflag, method, f_real, g, a, M)
 
-plt.figure(5)
+#these plots do only work when dflag comprises only one element
+#plt.figure(5)
 
-plt.subplot(211)
-plt.plot(phased_cpx)
-plt.xlabel('Phase derivative - complex signal')
+#plt.subplot(211)
+#plt.plot(np.abs(phased_cpx))
+#plt.xlabel('Phase derivative - complex signal')
 
-plt.subplot(212)
-plt.plot(phased_real)
-plt.xlabel('Phase derivative - real signal')
-plt.show()
+#plt.subplot(212)
+#plt.plot(phased_real)
+#plt.xlabel('Phase derivative - real signal')
+#plt.show()
 
 #spectrogram reassignment
 sr_cpx = ltfat.gabreassign(s_cpx, tgrad, fgrad, a)
-sr_real = ltfat.gabreassignreal(np.abs(c_real), tgrad, fgrad, a)
+sr_real = ltfat.gabreassignreal(np.abs(c_cpx), tgrad, fgrad, a, M)
 
+#currently not supported:
 mu = 0.1
 sr_adj = ltfat.gabreassignadjust(s_cpx, phased_cpx, a, mu)
+
+#phase reconstruction
+#c_pghi_cpx = ltfat.constructphase(s_cpx, g, a)
+#c_pghi_real = ltfat.constructphasereal(np.abs(c_real), g, a, M)
+
+#phase conversions
+c_lock = ltfat.phaselock(c_cpx, a)
+c_unlock = ltfat.phaseunlock(c_lock, a)
+
+c_lock_real = ltfat.phaselockreal(c_real, a, M)
+c_unlock_real = ltfat.phaseunlockreal(c_lock_real, a, M)
+
+c_sym = ltfat.symphase(c_cpx, a)
+
+
+#support for non-separable lattices
+lt = [0, 1]
+V = [[10, 0], [5, 10]]
+[a,M,lt] = ltfat.matrix2latticetype(L, V)
+V = ltfat.latticetype2matrix(L, a, M, lt)
+[s0,s1,br] = ltfat.shearfind(L,a,M,lt)
+Lshear = ltfat.noshearlength(L,a,M,lt)

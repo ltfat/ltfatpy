@@ -97,7 +97,7 @@ def dgtlength(self, Ls, a, M, nout = 1):
 def multidgtrealmp(self, f, dicts, errdb, maxit, nout = 3):
     argg = inspect.getfullargspec(multidgtrealmp)
     inargs = argg[0]
-    [c,frec,info] = self.feval(inargs, 'multidgtrealmp', f,dicts,errdb,maxit, nout)
+    c = self.feval(inargs, 'multidgtrealmp', f,dicts,errdb,maxit, nout)
     return c
 
 #Wilson bases and WMDCT
@@ -223,58 +223,84 @@ def gabreassignadjust(self, s, pderivs, a, mu, nout = 1):
 
 #Phase reconstruction
 @register_method
-def constructphase(self, s, g, a, tol, mask, usephase, nout = 1):
-    [c,newphase,usedmask,tgrad,fgrad] = self.feval('constructphase', s, g, a, tol, mask, usephase, nout)
+def constructphase(self, s, g, a, nout = 1):
+    argg = inspect.getfullargspec(constructphase)
+    inargs = argg[0]
+    c = self.feval(inargs, 'constructphase', s, g, a, nout)
+    return c
 
 @register_method
-def constructphasereal(self, s, g, a, M, tol, mask, usephase, nout = 1):
-    [c,newphase,usedmask,tgrad,fgrad] = self.feval('constructphasereal', s, g, a, M, tol, mask, usephase, nout)
+def constructphasereal(self, s, g, a, M, nout = 1):
+    argg = inspect.getfullargspec(constructphasereal)
+    inargs = argg[0]
+    c = self.feval(inargs, 'constructphasereal', s, g, a, M, nout)
+    return c
 
 
 #Phase conversions
 @register_method
 def phaselock(self, c, a, nout = 1):
-    c = self.feval('phaselock', c, a, nout)
+    argg = inspect.getfullargspec(phaselock)
+    inargs = argg[0]
+    c = self.feval(inargs, 'phaselock', c, a, nout)
     return c
 
 @register_method
 def phaseunlock(self, c, a, nout = 1):
-    c = self.feval('phaseunlock', c, a, nout)
+    argg = inspect.getfullargspec(phaseunlock)
+    inargs = argg[0]
+    c = self.feval(inargs, 'phaseunlock', c, a, nout)
     return c
 
 @register_method
 def phaselockreal(self, c, a, M, nout = 1):
-    c = self.feval('phaselock', c, a, M, nout)
+    argg = inspect.getfullargspec(phaselockreal)
+    inargs = argg[0]
+    c = self.feval(inargs, 'phaselockreal', c, a, M, nout)
     return c
 
 @register_method
 def phaseunlockreal(self, c, a, M, nout = 1):
-    c = self.feval('phaseunlock', c, a, M, nout)
+    argg = inspect.getfullargspec(phaseunlockreal)
+    inargs = argg[0]
+    c = self.feval(inargs, 'phaseunlockreal', c, a, M, nout)
     return c
 
 @register_method
 def symphase(self, c, a, nout = 1):
-    c = self.feval('symphase', c, a, nout)
+    argg = inspect.getfullargspec(symphase)
+    inargs = argg[0]
+    c = self.feval(inargs, 'symphase', c, a, nout)
     return c
 
 
 #Support for non-separable lattices
 @register_method
-def matrix2latticetype(self, L, V, nout = 1):
-    [a,M,lt] = self.feval('matrix2latticetype', L, V, nout = 3)
+def matrix2latticetype(self, L, V, nout = 3):
+    argg = inspect.getfullargspec(matrix2latticetype)
+    inargs = argg[0]
+    [a,M,lt] = self.feval(inargs, 'matrix2latticetype', L, V, nout)
+    return a, M, lt
 
 @register_method
 def latticetype2matrix(self, L, a, M, lt, nout = 1):
-    V = self.feval('latticetype2matrix', L, a, M, lt, nout = 1)
+    argg = inspect.getfullargspec(latticetype2matrix)
+    inargs = argg[0]
+    V = self.feval(inargs, 'latticetype2matrix', L, a, M, lt, nout)
     return V
 
 @register_method
-def shearfind(self, L, a, M, lt, nout = 1):
-    [s0,s1,br] = self.feval('shearfind', L,a,M,lt, nout)
+def shearfind(self, L, a, M, lt, nout = 3):
+    argg = inspect.getfullargspec(shearfind)
+    inargs = argg[0]
+    [s0,s1,br] = self.feval(inargs, 'shearfind', L,a,M,lt, nout)
+    return s0, s1, br
 
 @register_method
-def noshearlength(Ls, a, M, lt, nout):
-    L = self.feval('noshearlength', Ls,a,M,lt, nout)
+def noshearlength(self, Ls, a, M, lt, nout = 1):
+    argg = inspect.getfullargspec(noshearlength)
+    inargs = argg[0]
+    L = self.feval(inargs, 'noshearlength', Ls,a,M,lt, nout)
     return L
 
 
