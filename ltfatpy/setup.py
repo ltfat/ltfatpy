@@ -11,6 +11,7 @@ setup(
 )
 
 def compile_oct_files():
+    #os. chdir("./lib") 
     process = Popen(["./configure"], stdout=PIPE, cwd="./setup")
    # src_path = r"./libltfat/build/libltfat.a"
    # dst_path = r"./octave/ltfat/oct/libltfat.a"
