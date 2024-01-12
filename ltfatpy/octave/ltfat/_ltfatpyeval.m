@@ -53,18 +53,38 @@ for ii = 1:numel(variables)
     end
 end
 
+%nout
+%func_name
+%inargs
+%fs
+%variables.name
 
-in_args = strjoin(inargs, ',');
-[result{1:nout}]=eval(strcat(func_name, '(', in_args, ')'));
+if ~exist('func_args', 'var')
+  in_args = strjoin(inargs, ',');
+  %strcat(func_name, '(', in_args, ')')
+  [result{1:nout}]=eval(strcat(func_name, '(', in_args, ')'));
+else
+  %assignin('base', 'ans', sentinel);
+  %for ii = 1:numel(inargs)
+  %  eval(inargs{ii});
+  %end
+  [result{1:nout}]=eval(strcat(func_name, func_args{1}));
+  %feval(func_name, func_args{1}, c=func_args{2});
+end
 
 
 % Save the output to a file.
 try
   save('-v6', '-mat-binary', output_file, 'result', 'err');
 catch ME
-  result = { sentinel };
-  err = ME;
+  %result = { sentinel };
+  %err = ME;
+  %result
+  for ii = 1:nout
+    result{ii} = "dummy";
+    end
   save('-v6', '-mat-binary', output_file, 'result', 'err');
 end
+
 
 end  % function

@@ -32,6 +32,7 @@ bp = os.path.dirname(os.path.dirname(__file__))
 filepath = os.path.join(bp, 'ltfatpy')
 sys.path.append(filepath)
 import gabor as Gabor
+import filterbank as Filterbank
 
 def add_methods_from(*modules):
     def decorator(Class):
@@ -42,6 +43,7 @@ def add_methods_from(*modules):
     return decorator
 
 @add_methods_from(Gabor)
+@add_methods_from(Filterbank)
 class Ltfat():
 
     """Manages an Octave session. based on Oct2Py
@@ -280,6 +282,10 @@ class Ltfat():
         if not stream_handler:
             stream_handler = self.logger.info if verbose else self.logger.debug
         
+        #print(inargs)
+        #print(func_name)
+        #print(func_args)
+
         return self._feval( inargs,
             func_name,
             func_args,
@@ -292,8 +298,9 @@ class Ltfat():
         )
 
     def eval(  # noqa
-        self,
+        self, 
         cmds,
+        inargs = [],
         verbose=True,
         timeout=None,
         stream_handler=None,
@@ -413,8 +420,9 @@ class Ltfat():
             stream_handler = lines.append
 
         ans = None
+        #inargs = []
         for cmd in cmds:
-            resp = self.feval(
+            resp = self.feval(inargs,
                 "evalin",
                 "base",
                 cmd,
@@ -475,22 +483,30 @@ class Ltfat():
         # Save the request data to the output file.
         req = dict(
             func_name=func_name,
-        #    func_args=tuple(func_args),
+            #func_args=tuple(func_args),
             dname=dname or "",
             nout=nout,
             store_as=store_as or "",
             ref_indices=ref_arr,
             inargs = inargs[1:len(inargs)-1],
         )
-
+        #print("HERE")
+        #print(tuple(func_args))
+        #print("HERE")
+        #print(inargs[1])
+        #if isinstance(inargs, dict):
         func_dict = dict(zip(inargs[1:len(inargs)], func_args))
+        #else:
+        #    func_dict = dict(zip(inargs[1:len(inargs)], inargs[1:len(inargs)]))
+        #    print(func_dict)
         
         req.update(func_dict)
 
         write_file(req, out_file, oned_as=self._oned_as, convert_to_float=self.convert_to_float)
 
         # Set up the engine and evaluate the `_pyeval()` function.
-        engine.line_handler = stream_handler or self.logger.info
+        #engine.line_handler = stream_handler.any() or self.logger.info
+        engine.line_handler = self.logger.info
         if timeout is None:
             timeout = self.timeout
 
@@ -559,6 +575,7 @@ class Ltfat():
     def help(self, str):
         self.eval('help '+str)
 
+
 def get_log(name=None):
     """Return a console logger.
 
@@ -581,6 +598,11 @@ class LtfatError(Exception):
     """Called when we can't open Octave or Octave throws an error"""
     #sys.tracebacklimit = 0 #TODO: find a neater solution here
     pass
+
+
+__all__ = [
+    "ltfat"
+]
 
 
 try:

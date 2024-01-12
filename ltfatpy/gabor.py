@@ -19,6 +19,10 @@ register_method = register_method(__methods__)
 def dgt(self, f, g, a, M, nout = 1):
     argg = inspect.getfullargspec(dgt)
     inargs = argg[0]
+
+    if not f.any():
+        return self.feval(inargs, '_dgt_synthesismatrix', g, a, M, nout)
+
     c = self.feval(inargs, 'dgt', f, g, a, M, nout)
     return c
 
