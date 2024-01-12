@@ -166,7 +166,7 @@ class Ltfat():
         self._engine.eval('warning ("off", "all");')
         self._engine.eval("pkg load ltfat")
 
-    def feval(self, inargs, func_path, *func_args, **kwargs):
+    def feval(self, func_path, *func_args, **kwargs):
         """Run a function in Octave and return the result.
 
         Parameters
@@ -286,7 +286,7 @@ class Ltfat():
         #print(func_name)
         #print(func_args)
 
-        return self._feval( inargs,
+        return self._feval(
             func_name,
             func_args,
             dname=dname,
@@ -300,7 +300,6 @@ class Ltfat():
     def eval(  # noqa
         self, 
         cmds,
-        inargs = [],
         verbose=True,
         timeout=None,
         stream_handler=None,
@@ -422,7 +421,7 @@ class Ltfat():
         ans = None
         #inargs = []
         for cmd in cmds:
-            resp = self.feval(inargs,
+            resp = self.feval(
                 "evalin",
                 "base",
                 cmd,
@@ -449,7 +448,7 @@ class Ltfat():
         return ans
 
     def _feval(  # noqa
-        self, inargs,
+        self,
         func_name,
         func_args=(),
         dname="",
@@ -483,35 +482,35 @@ class Ltfat():
         # Save the request data to the output file.
         req = dict(
             func_name=func_name,
-            #func_args=tuple(func_args),
+            func_args=tuple(func_args),
             dname=dname or "",
             nout=nout,
             store_as=store_as or "",
             ref_indices=ref_arr,
-            inargs = inargs[1:len(inargs)-1],
+            #inargs = inargs[1:len(inargs)-1],
         )
         #print("HERE")
         #print(tuple(func_args))
         #print("HERE")
         #print(inargs[1])
         #if isinstance(inargs, dict):
-        func_dict = dict(zip(inargs[1:len(inargs)], func_args))
+        #func_dict = dict(zip(inargs[1:len(inargs)], func_args))
         #else:
         #    func_dict = dict(zip(inargs[1:len(inargs)], inargs[1:len(inargs)]))
         #    print(func_dict)
         
-        req.update(func_dict)
+        #req.update(func_dict)
 
         write_file(req, out_file, oned_as=self._oned_as, convert_to_float=self.convert_to_float)
 
         # Set up the engine and evaluate the `_pyeval()` function.
         #engine.line_handler = stream_handler.any() or self.logger.info
-        engine.line_handler = self.logger.info
+        engine.line_handler = stream_handler or self.logger.info
         if timeout is None:
             timeout = self.timeout
 
         try:
-            engine.eval(f'_ltfatpyeval("{in_file}", "{out_file}");', timeout=timeout)
+            engine.eval(f'_ltfatpyeval("{out_file}", "{in_file}");', timeout=timeout)
         except KeyboardInterrupt:
             stream_handler(engine.repl.interrupt())
             raise
@@ -574,6 +573,31 @@ class Ltfat():
         #override help from oct2py because of formatting
     def help(self, str):
         self.eval('help '+str)
+
+    def push(self, name, var, timeout=None, verbose=True):
+        if isinstance(name, str):
+            name = [name]
+            var = [var]
+
+        for n, v in zip(name, var):
+            self.feval('assignin', 'base', n, v, nout=0)
+
+        
+    def pull(self, var):
+        if isinstance(var, str):
+            var = [var]
+        outputs = []
+        for name in var:
+            #exist = self._exist(name)
+            exist = 1
+            if exist == 1:
+                outputs.append(self.feval("evalin", "base", name))
+            else:
+                outputs.append(self.get_pointer(name, timeout=timeout))
+
+        if len(outputs) == 1:
+            return outputs[0]
+        return outputs
 
 
 def get_log(name=None):
