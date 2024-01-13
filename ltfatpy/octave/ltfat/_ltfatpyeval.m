@@ -31,14 +31,23 @@ function _pyeval(input_file, output_file)
       if req.dname
           addpath(req.dname);
       end
-  
+      
+      %the resolution of the input cell arrays goes HERE
+
+      %for ii = 1:numel(req.func_args)
+      %  if ischar(req.func_args{ii})
+      %    req.func_args{ii} = num2str(req.func_args{ii});
+      %  end
+      %  req.func_args{ii}
+      %end
+      
       % Replace the names at the specified indices with their values.
       for idx=1:length(req.ref_indices)
         ref_index = req.ref_indices(idx);
         var_name = req.func_args{ref_index};
         req.func_args{ref_index} = evalin('base', var_name);
       end
-  
+
       assignin('base', 'ans', sentinel);
   
       % Use the `ans` response if no output arguments are expected.

@@ -249,7 +249,7 @@ class Ltfat():
             nout = self._get_max_nout(func_path)
 
         plot_dir = kwargs.get("plot_dir")
-
+        
         # Choose appropriate plot backend.
         #default_backend = "inline" if plot_dir else self.backend
         #backend = kwargs.get("plot_backend", default_backend)
@@ -471,6 +471,9 @@ class Ltfat():
         in_file = in_file.replace(osp.sep, "/")
 
         func_args = list(func_args)
+        #HERE
+        #print(*func_args)
+        #print(any(isinstance(val, str) for val in tuple(func_args)))
 
         ref_indices = []
         for i, value in enumerate(func_args):
@@ -489,17 +492,6 @@ class Ltfat():
             ref_indices=ref_arr,
             #inargs = inargs[1:len(inargs)-1],
         )
-        #print("HERE")
-        #print(tuple(func_args))
-        #print("HERE")
-        #print(inargs[1])
-        #if isinstance(inargs, dict):
-        #func_dict = dict(zip(inargs[1:len(inargs)], func_args))
-        #else:
-        #    func_dict = dict(zip(inargs[1:len(inargs)], inargs[1:len(inargs)]))
-        #    print(func_dict)
-        
-        #req.update(func_dict)
 
         write_file(req, out_file, oned_as=self._oned_as, convert_to_float=self.convert_to_float)
 
@@ -598,6 +590,91 @@ class Ltfat():
         if len(outputs) == 1:
             return outputs[0]
         return outputs
+
+    def _exist(self, name):
+        """Test whether a name exists and return the name code.
+
+        Raises an error when the name does not exist.
+        """
+        cmd = 'exist("%s")' % name
+        if not self._engine:
+            msg = "Session is not open"
+            raise Oct2PyError(msg)
+        resp = self._engine.eval(cmd, silent=True).strip()
+        exist = int(resp.split()[-1])
+        if exist == 0:
+            cmd = "class(%s)" % name
+            resp = self._engine.eval(cmd, silent=True).strip()
+            if "error:" in resp:
+                msg = 'Value "%s" does not exist in Octave workspace'
+                raise Oct2PyError(msg % name)
+            else:
+                exist = 2
+        return exist
+
+    def get_pointer(self, name, timeout=None):
+        """Get a pointer to a named object in the Octave workspace.
+
+        Parameters
+        ----------
+        name: str
+            The name of the object in the Octave workspace.
+        timeout: float, optional.
+            Time to wait for response from Octave (per line).
+
+        Examples
+        --------
+        >>> from oct2py import octave
+        >>> octave.eval('foo = [1, 2];')
+        >>> ptr = octave.get_pointer('foo')
+        >>> ptr.value
+        array([[1., 2.]])
+        >>> ptr.address
+        'foo'
+        >>> # Can be passed as an argument
+        >>> octave.disp(ptr)  # doctest: +SKIP
+        1  2
+
+        >>> from oct2py import octave
+        >>> sin = octave.get_pointer('sin')  # equivalent to `octave.sin`
+        >>> sin.address
+        '@sin'
+        >>> x = octave.quad(sin, 0, octave.pi())
+        >>> x
+        2.0
+
+        Notes
+        -----
+        Pointers can be passed to `feval` or dynamic functions as function
+        arguments.  A pointer passed as a nested value will be passed by value
+        instead.
+
+        Raises
+        ------
+        Oct2PyError
+            If the variable does not exist in the Octave session or is of
+            unknown type.
+
+        Returns
+        -------
+        A variable, object, user class, or function pointer as appropriate.
+        """
+        #exist = self._exist(name)
+        #isobject = self._isobject(name, exist)
+
+        #if exist == 0:
+        #    raise Oct2PyError('"%s" is undefined' % name)
+
+        #elif exist == 1:
+        return _make_variable_ptr_instance(self, name)
+
+        #elif isobject:
+        #    return self._get_user_class(name)
+
+        #elif exist in [2, 3, 5]:
+        #    return self._get_function_ptr(name)
+
+        #raise Oct2PyError('Unknown type for object "%s"' % name)
 
 
 def get_log(name=None):

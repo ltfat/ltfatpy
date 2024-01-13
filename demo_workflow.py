@@ -10,7 +10,8 @@ g = 'gauss'
 a = 10
 M = 20
 
-c = ltfat.dgt(f, g, a, M)
+#optional arguments should be supported, but have not been exhaustively tested
+c = ltfat.dgt(f, g, a, M, 'lt', [0, 1], 'freqinv')
 #now, you can do LTFAT stuff here
 #once you are finished, you can type
 ltfat.exit()
@@ -56,10 +57,10 @@ f_none = np.empty((L, 1))
 g = ltfat.dgt(f_none, g, a, M)
 
 #print(g)
-fs = 22050
-fmin = 100
-fmax = 4000
-bins = 4
+#fs = 22050
+#fmin = 100
+#fmax = 4000
+#bins = 4
 
 #fb_1 = ltfat.cqtfilterbank(f, fs, fmin, fmax, bins, L)
 #fb_2 = ltfat.audfilterbank(f, fs, L)
