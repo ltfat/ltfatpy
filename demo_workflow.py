@@ -53,7 +53,7 @@ except:
 
 
 #special functionality: retrieve the synthesis matrix by passing an empty numpy array as an input
-f_none = np.empty((L, 1))
+f_none = np.array([])
 g = ltfat.dgt(f_none, g, a, M)
 
 #print(g)

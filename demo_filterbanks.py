@@ -24,4 +24,10 @@ frec = ltfat.ifilterbank(fb_2, g_2, a_2)
 [fb_3,g_3,a_3] = ltfat.waveletfilterbank(f, L, fs, fmin, fmax, bins)
 frec = ltfat.ifilterbank(fb_3, g_3, a_3)
 
-print(fb_3)
+
+f_none = np.array([])
+fb_1_op = ltfat.cqtfilterbank(f_none, fs, fmin, fmax, bins, L)
+fb_2_op = ltfat.audfilterbank(f_none, fs, L)
+fb_3_op = ltfat.waveletfilterbank(f_none, L, fs, fmin, fmax, bins)
+
+print(fb_1_op)
