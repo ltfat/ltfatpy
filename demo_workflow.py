@@ -56,13 +56,17 @@ except:
 f_none = np.array([])
 g = ltfat.dgt(f_none, g, a, M)
 
-#print(g)
-#fs = 22050
-#fmin = 100
-#fmax = 4000
-#bins = 4
+#difference between the LTFAT syntax in Octave and Python: cells
 
-#fb_1 = ltfat.cqtfilterbank(f, fs, fmin, fmax, bins, L)
-#fb_2 = ltfat.audfilterbank(f, fs, L)
-#fb_3 = ltfat.waveletfilterbank(f, L, fs, fmin, fmax, bins)
-#print(fb_2)
+#example:
+#calculate tight gabor window in Octave:
+# gd=gabwin({'tight','gauss'},a,M,L)
+
+#calculate tight gabor window in Python:
+gd = ltfat.gabwin(('tight', 'gauss'), 10, 20, 100)
+
+#please note that there are many different ways cell arrays are
+#used in LTFAT. Therefore, for the alpha version, it is entirely
+#possible that not every combination of input parameters works.
+#if you notice some error, please file a bug request on github:
+#github.com/ltfat/ltfatpy
