@@ -86,6 +86,20 @@ def filterbanklengthcoef(self, coef, a, *args, nout = 1):
 
     return L
 
+@register_method
+def cqtfilters(self, fs,fmin,fmax,bins,Ls,*args, nout = 2):
+    argg = inspect.getfullargspec(filterbanklengthcoef)
+    inargs = argg[0]
+
+    self.feval('cqtfilters', fs,fmin,fmax,bins,Ls, *args, store_as="result_strct", nout=nout)
+
+    self.eval("g = result_strct.par; a = result_strct.par1;")
+    #fb_pars = self.get_pointer('fb_pars')
+    g = self.get_pointer('g')
+    a = self.pull('a')
+
+    return g, a 
+
 #Some special filterbanks, as they might be useful for ML tasks
 @register_method
 def cqtfilterbank(self, f, fs, fmin, fmax, bins, Ls):

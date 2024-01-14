@@ -85,9 +85,13 @@ function _pyeval(input_file, output_file)
           end
         end
       end
-  
+
       if req.store_as
-        assignin('base', req.store_as, result{1});
+        result_strct = struct();
+        for ii = 1:req.nout
+          result_strct.(genvarname ("par", fieldnames (result_strct))) = result{ii};
+        end
+        assignin('base', req.store_as, result_strct)
         result = { sentinel };
       end
   
