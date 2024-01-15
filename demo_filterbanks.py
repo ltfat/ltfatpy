@@ -1,6 +1,8 @@
 from ltfatpy import ltfat
 import numpy as np
+import matplotlib.pyplot as plt
 
+#from oct2py.dynamic import OctaveVariablePtr
 
 L = 1000
 f = np.random.randn(L, 1)
@@ -10,32 +12,28 @@ fmin = 100
 fmax = 4000
 bins = 4
 
-#there are three types of filterbank available. optional input arguments
-#are not yet supported yet for them.
-#for the time being, you can add the arguments you need manually in filterbank.py
-#if you found implemented a permanent solution, please consider pushing them to our
-#github repository: github.com/ltfat/ltfatpy
-#[fb_1,g_1,a_1] = ltfat.cqtfilterbank(f, fs, fmin, fmax, bins, L)
-#frec = ltfat.ifilterbank(fb_1, g_1, a_1)
-
-#[fb_2,g_2,a_2] = ltfat.audfilterbank(f, fs, L)
-#frec = ltfat.ifilterbank(fb_2, g_2, a_2)
-
-#[fb_3,g_3,a_3] = ltfat.waveletfilterbank(f, L, fs, fmin, fmax, bins)
-#frec = ltfat.ifilterbank(fb_3, g_3, a_3)
-
-
-#f_none = np.array([])
-#fb_1_op = ltfat.cqtfilterbank(f_none, fs, fmin, fmax, bins, L)
-#fb_2_op = ltfat.audfilterbank(f_none, fs, L)
-#fb_3_op = ltfat.waveletfilterbank(f_none, L, fs, fmin, fmax, bins)
-
-[g, a] = ltfat.cqtfilters(fs,fmin,fmax,bins,L)
-#be careful: g is passed as a pointer because it comprises Octave data types
+[g, a, fc, L] = ltfat.cqtfilters(fs,fmin,fmax,bins,L)
+#be careful: 'g' is passed as a pointer because it comprises Octave data types
 # that do not have a correspondence in Python. you can not
 #directly evaluate it in Python.
-L = ltfat.filterbanklength(L, a)
+
+#L = ltfat.filterbanklength(L, a) #not needed
 c = ltfat.filterbank(f, g, a)
 
-print(c)
+frec = ltfat.ifilterbank(c, g, a)
 
+f_none = np.array([])
+c_op = ltfat.filterbank(f_none, g, a, L)
+
+print(np.abs(c))
+#plt.imshow(np.abs(c))
+#print(isinstance(c,np.ndarray))
+#fig, (ax1, ax2) = plt.subplots(2, 1)
+#fig.suptitle('Constant-Q filterbank')
+#ax1.plot(x, y)
+#ax2.plot(x, y)
+#plotting the array
+#ax1.imshow(np.abs(c), cmap='binary')
+#ax2.imshow(np.abs(c_op), cmap='binary')
+#plt.colorbar()
+#plt.show()

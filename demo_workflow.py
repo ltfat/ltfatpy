@@ -1,7 +1,7 @@
 #first, you import an ltfat object that manages an Octave session in the background.
 from ltfatpy import ltfat
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 L = 100
 f = np.random.randn(L, 1)
@@ -56,8 +56,11 @@ except:
 f_none = np.array([])
 g = ltfat.dgt(f_none, g, a, M)
 
-#difference between the LTFAT syntax in Octave and Python: cells
+#print(e.shape)
+plt.imshow(np.abs(e))
+plt.show()
 
+#difference between the LTFAT syntax in Octave and Python: cells
 #example:
 #calculate tight gabor window in Octave:
 # gd=gabwin({'tight','gauss'},a,M,L)

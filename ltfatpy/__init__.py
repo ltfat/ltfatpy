@@ -576,6 +576,10 @@ class Ltfat():
 
         
     def pull(self, var):
+        #if isinstance(var, (OctaveVariablePtr)):
+        #    raise LtfatError("LTFATPY Error: You can not evaluate an Octave pointer in Python.")
+            
+
         if isinstance(var, str):
             var = [var]
         outputs = []

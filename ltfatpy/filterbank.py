@@ -22,29 +22,23 @@ register_method = register_method(__methods__)
 #Transforms and basic routines
 @register_method
 def filterbank(self, f,g,a, *args, nout = 1):
-    argg = inspect.getfullargspec(filterbank)
-    inargs = argg[0]
 
     if not f.any():
-        return self.feval('_filterbank_synthesismatrix', g, a, M, *args, nout = nout)
+        return self.feval('_fb_synthesismatrix', g, a, *args, nout = nout)
 
     c = self.feval('filterbank', f, g, a, *args, nout=nout)
     return c
 
 def ufilterbank(self, f,g,a, *args, nout = 1):
-    argg = inspect.getfullargspec(ufilterbank)
-    inargs = argg[0]
 
     if not f.any():
-        return self.feval('_filterbank_synthesismatrix', g, a, M, *args, nout = nout)
+        return self.feval('_fb_synthesismatrix', g, a, M, *args, nout = nout)
 
     c = self.feval('ufilterbank', f, g, a, *args, nout=nout)
     return c
 
 @register_method
 def ifilterbank(self, c, g, a, *args, nout = 1):
-    argg = inspect.getfullargspec(ifilterbank)
-    inargs = argg[0]
 
     f = self.feval('ifilterbank', c, g, a, *args, nout=nout)
 
@@ -52,8 +46,6 @@ def ifilterbank(self, c, g, a, *args, nout = 1):
 
 @register_method
 def ifilterbankiter(self, c, g, a, *args, nout = 1):
-    argg = inspect.getfullargspec(ifilterbankiter)
-    inargs = argg[0]
 
     f = self.feval('ifilterbankiter', c, g, a, *args, nout=nout)
 
@@ -61,8 +53,6 @@ def ifilterbankiter(self, c, g, a, *args, nout = 1):
 
 @register_method
 def filterbankwin(self, g, a, L, *args, nout = 1):
-    argg = inspect.getfullargspec(filterbankwin)
-    inargs = argg[0]
 
     g = self.feval('filterbankwin', g, a, L, *args, nout=nout)
 
@@ -70,8 +60,6 @@ def filterbankwin(self, g, a, L, *args, nout = 1):
 
 @register_method
 def filterbanklength(self, Ls, a, *args, nout = 1):
-    argg = inspect.getfullargspec(filterbanklength)
-    inargs = argg[0]
 
     L = self.feval('filterbanklength', Ls, a, *args, nout=nout)
 
@@ -79,27 +67,198 @@ def filterbanklength(self, Ls, a, *args, nout = 1):
 
 @register_method
 def filterbanklengthcoef(self, coef, a, *args, nout = 1):
-    argg = inspect.getfullargspec(filterbanklengthcoef)
-    inargs = argg[0]
 
-    L = self.feval('filterbanklength', coef, a, *args, nout=nout)
+    L = self.feval('filterbanklengthcoef', coef, a, *args, nout=nout)
 
     return L
 
+#Filter generators
 @register_method
-def cqtfilters(self, fs,fmin,fmax,bins,Ls,*args, nout = 2):
-    argg = inspect.getfullargspec(filterbanklengthcoef)
-    inargs = argg[0]
+def cqtfilters(self, fs,fmin,fmax,bins,Ls,*args, nout = 4):
 
     self.feval('cqtfilters', fs,fmin,fmax,bins,Ls, *args, store_as="result_strct", nout=nout)
 
-    self.eval("g = result_strct.par; a = result_strct.par1;")
-    #fb_pars = self.get_pointer('fb_pars')
-    g = self.get_pointer('g')
-    a = self.pull('a')
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
 
-    return g, a 
+    return g, a, fc, L 
 
+
+@register_method
+def erbfilters(self, fs,Ls,*args, nout = 4):
+
+    self.feval('erbfilters', fs,Ls, *args, store_as="result_strct", nout=nout)
+
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
+
+    return g, a, fc, L 
+
+@register_method
+def warpedfilters(self, freqtoscale,scaletofreq,fs,fmin,fmax,bins,Ls,*args, nout = 4):
+
+    self.feval('warpedfilters', freqtoscale,scaletofreq,fs,fmin,fmax,bins,Ls, *args, store_as="result_strct", nout=nout)
+
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
+
+    return g, a, fc, L 
+
+@register_method
+def audfilters(self, fs,Ls,*args, nout = 4):
+
+    self.feval('audfilters', fs,Ls, *args, store_as="result_strct", nout=nout)
+
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
+
+    return g, a, fc, L 
+
+@register_method
+def gabfilters(self, Ls, g, a, M, *args, nout = 4):
+
+    self.feval('gabfilters', Ls, g, a, M, *args, store_as="result_strct", nout=nout)
+
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
+
+    return g, a, fc, L 
+
+@register_method
+def waveletfilters(self, Ls,scales,*args, nout = 4):
+
+    self.feval('waveletfilters', Ls,scales, *args, store_as="result_strct", nout=nout)
+
+    g = self.get_pointer('result_strct.par')
+    a = self.pull('result_strct.par1')
+    fc = self.pull('result_strct.par2')
+    L = self.pull('result_strct.par3')
+
+    return g, a, fc, L 
+
+#Window construction and bounds
+@register_method
+def filterbankdual(self, g,a,*args, nout = 1):
+
+    gd = self.feval('filterbankdual', g, a, *args, nout=nout)
+
+    return gd 
+
+@register_method
+def filterbanktight(self, g,a,*args, nout = 1):
+
+    gt = self.feval('filterbanktight', g, a, *args, nout=nout)
+
+    return gt
+
+@register_method
+def filterbankrealdual(self, g,a,*args, nout = 1):
+
+    gd = self.feval('filterbankrealdual', g, a, *args, nout=nout)
+
+    return gd 
+
+@register_method
+def filterbankrealtight(self, g,a,*args, nout = 1):
+
+    gt = self.feval('filterbankrealtight', g, a, *args, nout=nout)
+
+    return gt 
+
+@register_method
+def filterbankbounds(self, g,a,*args, nout = 2):
+
+    [A, B] = self.feval('filterbankbounds', g, a, *args, nout=nout)
+
+    return A, B
+
+@register_method
+def filterbankrealbounds(self, g,a,*args, nout = 2):
+
+    [A, B] = self.feval('filterbankbounds', g, a, *args, nout=nout)
+
+    return A, B 
+
+@register_method
+def filterbankresponse(self, g,a, L, *args, nout = 1):
+
+    gf = self.feval('filterbankresponse', g, a, L, *args, nout=nout)
+
+    return gf
+
+#Auxiliary
+@register_method
+def filterbankfreqz(self, g,a, L, *args, nout = 1):
+
+    gf = self.feval('filterbankfreqz', g, a, L, *args, nout=nout)
+
+    return gf
+
+@register_method
+def filterbankscale(self, g, scal, *args, nout = 1):
+
+    g = self.feval('filterbankscale', g, scal, *args, nout=nout)
+
+    return g
+
+@register_method
+def nonu2ufilterbank(self, g,a, *args, nout = 1):
+
+    gf = self.feval('nonu2ufilterbank', g, a, *args, nout=nout)
+
+    return gf
+
+@register_method
+def u2nonucfmt(self, cu,pk, *args, nout = 1):
+
+    c = self.feval('u2nonucfmt', cu, pk, *args, nout=nout)
+
+    return c
+
+@register_method
+def nonu2ucfmt(self, cu,pk, *args, nout = 1):
+
+    cu = self.feval('nonu2ucfmt', cu, pk, *args, nout=nout)
+
+    return cu
+
+#Reassignment and phase gradient
+@register_method
+def filterbankphasegrad(self, f,g,a, *args, nout = 4):
+
+    [tgrad,fgrad,s,c] = self.feval('filterbankphasegrad', f, g, a, *args, nout=nout)
+    return tgrad,fgrad,s,c
+
+@register_method
+def filterbankreassign(self, s,tgrad,fgrad, a, g, *args, nout = 3):
+
+    [sr,repos,Lc] = self.feval('filterbankreassign', s,tgrad,fgrad, a, g, *args, nout=nout)
+    return sr,repos,Lc
+
+@register_method
+def filterbankreassign(self, c,tgrad,fgrad, *args, nout = 3):
+
+    [sr,repos,Lc] = self.feval('filterbankreassign', c,tgrad,fgrad, *args, nout=nout)
+    return sr,repos,Lc
+
+#Phase reconstruction
+@register_method
+def filterbankconstphase(self, s, a, fc, tfr, *args, nout = 5):
+
+    [c,newphase,usedmask,tgrad,fgrad] = self.feval('filterbankconstphase', s, a, fc, tfr,  *args, nout=nout)
+    return c,newphase,usedmask,tgrad,fgrad
+
+#-------------------------------------------------------------------------
 #Some special filterbanks, as they might be useful for ML tasks
 @register_method
 def cqtfilterbank(self, f, fs, fmin, fmax, bins, Ls):
