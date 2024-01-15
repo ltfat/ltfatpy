@@ -61,7 +61,8 @@ Example:
 ```
 [g, a] = ltfat.cqtfilters(fs,fmin,fmax,bins,L)
 ```
-will not work.
+will not work. To find out how many function arguments are needed,
+check the Python file that corresponds to the module you are working with (here: filterbank.py).
 ```
 [g, a, fc, L] = ltfat.cqtfilters(fs,fmin,fmax,bins,L)
 ```
