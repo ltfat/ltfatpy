@@ -2,20 +2,20 @@ The repository is under development. Hence, everything written here is temporary
 If you encounter any errors, please write an issue.
 
 Current requirements:
+------------------------
 
 Python (3.10 or 3.11 is recommended), with packages
-------------------------
 - numpy
 - scipy
 - oct2py
 
 Octave
-------------------------
 - GNU Octave installed (version 8.4.0 is recommended)
 - for Debian/Ubuntu and MacOS only: mkoctfile (do: $apt install liboctave-dev)
 
 
-HOW TO USE:
+How to use:
+------------------------
 
 The top folder of the ltfatpy package must be available in your (Python) pathe.g., do
 
@@ -40,7 +40,8 @@ So you can use it as
 and use the documentation the same way as you would when working with Octave. 
 You find the documentation [here](ltfat.org/doc/).
 
-THINGS TO KEEP IN MIND:
+Things to keep in mind:
+------------------------
 1. Keep in mind that in Python, ltfat is an object, not a filename.
 Without this object, there is no Octave, and without Octave, there is no LTFAT functionality.
 It is therefore not advisable to get rid of the ltfat object, or to otherwise manipulate it
