@@ -2,23 +2,30 @@ from ltfatpy import ltfat
 import numpy as np
 import matplotlib.pyplot as plt
 
-L = 1944
-f = np.random.randn(L, 1)
+Ls = 5880
+f = np.random.randn(Ls, 1)
 
 fs = 22050
 fmin = 100
-fmax = 4000
-bins = 4
+fmax = fs
+bins = 8
 
-[g, a, fc, L] = ltfat.cqtfilters(fs,fmin,fmax,bins,L)
+[g, a, fc, L] = ltfat.cqtfilters(fs,fmin,fmax,bins,Ls, 'fractional')
 #be careful: 'g' is passed as a pointer because it comprises Octave data types
 # that do not have a correspondence in Python. you can not
 #directly evaluate it in Python.
 
 #L = ltfat.filterbanklength(L, a) #not needed here
-c = ltfat.filterbank(f, g, a)
+c = ltfat.filterbank(f, g, a, Ls)
 
-frec = ltfat.ifilterbank(c, g, a, 'real')
+gd = ltfat.filterbankrealdual(g, a, L)
+
+#for this example, the framebounds are too unstable
+[A, B] = ltfat.filterbankrealbounds(g, a, L)
+print(B)
+print(A)
+
+frec = ltfat.ifilterbank(c, gd, a, 'real')
 
 f_none = np.array([])
 c_op = ltfat.filterbank(f_none, g, a, L)
