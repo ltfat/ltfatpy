@@ -1,9 +1,5 @@
 import inspect 
 import collections 
-#import weakref
-#from oct2py.dynamic import OctaveVariablePtr
-
-
 
 #Function adapted from https://www.qtrac.eu/pyclassmulti.html .
 def register_method(methods):

@@ -2,9 +2,7 @@ from ltfatpy import ltfat
 import numpy as np
 import matplotlib.pyplot as plt
 
-#from oct2py.dynamic import OctaveVariablePtr
-
-L = 1000
+L = 1944
 f = np.random.randn(L, 1)
 
 fs = 22050
@@ -17,23 +15,26 @@ bins = 4
 # that do not have a correspondence in Python. you can not
 #directly evaluate it in Python.
 
-#L = ltfat.filterbanklength(L, a) #not needed
+#L = ltfat.filterbanklength(L, a) #not needed here
 c = ltfat.filterbank(f, g, a)
 
-frec = ltfat.ifilterbank(c, g, a)
+frec = ltfat.ifilterbank(c, g, a, 'real')
 
 f_none = np.array([])
 c_op = ltfat.filterbank(f_none, g, a, L)
 
-print(np.abs(c))
-#plt.imshow(np.abs(c))
-#print(isinstance(c,np.ndarray))
-#fig, (ax1, ax2) = plt.subplots(2, 1)
-#fig.suptitle('Constant-Q filterbank')
-#ax1.plot(x, y)
-#ax2.plot(x, y)
-#plotting the array
-#ax1.imshow(np.abs(c), cmap='binary')
-#ax2.imshow(np.abs(c_op), cmap='binary')
-#plt.colorbar()
-#plt.show()
+#plot the synthesis matrix
+mat = np.reshape(np.abs(c_op),np.shape(c_op))
+plt.imshow(mat, origin='lower')
+plt.show()
+
+#plot the input and output signal
+plt.figure(figsize=(5, 2.7), layout='constrained')
+plt.plot(f, label='input')  # Plot some data on the (implicit) axes.
+plt.plot(frec, label='reconstruction')  # etc.
+plt.plot(f-frec, label='difference')
+plt.xlabel('Time [samples]')
+plt.ylabel('Amplitude [samples]')
+plt.title("Input and Output signal")
+plt.legend()
+plt.show()

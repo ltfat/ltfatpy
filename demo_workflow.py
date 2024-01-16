@@ -1,3 +1,7 @@
+#in this demo, we show how the Octave object can be handled from Python.
+#if you notice some error, please file a bug request on github:
+#github.com/ltfat/ltfatpy
+
 #first, you import an ltfat object that manages an Octave session in the background.
 from ltfatpy import ltfat
 import numpy as np
@@ -50,26 +54,3 @@ except:
     print("we need to restart Octave")
     ltfat.restart()
     e = ltfat.dgt(f, g, a, M)
-
-
-#special functionality: retrieve the synthesis matrix by passing an empty numpy array as an input
-f_none = np.array([])
-g = ltfat.dgt(f_none, g, a, M)
-
-#print(e.shape)
-plt.imshow(np.abs(e))
-plt.show()
-
-#difference between the LTFAT syntax in Octave and Python: cells
-#example:
-#calculate tight gabor window in Octave:
-# gd=gabwin({'tight','gauss'},a,M,L)
-
-#calculate tight gabor window in Python:
-gd = ltfat.gabwin(('tight', 'gauss'), 10, 20, 100)
-
-#please note that there are many different ways cell arrays are
-#used in LTFAT. Therefore, for the alpha version, it is entirely
-#possible that not every combination of input parameters works.
-#if you notice some error, please file a bug request on github:
-#github.com/ltfat/ltfatpy
