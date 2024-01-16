@@ -19,8 +19,8 @@ register_method = register_method(__methods__)
 def dgt(self, f, g, a, M, *args, nout = 1):
 
     if f.size == 0:
-        L = self.dgtlength(len(f), a, M)
-        return self.feval('_dgt_synthesismatrix', g, a, M, L, *args, nout = nout)
+        #L = self.dgtlength(len(f), a, M)
+        return self.feval('_dgt_synthesismatrix', g, a, M, *args, nout = nout)
 
     c = self.feval('dgt', f, g, a, M, *args, nout=nout)
     return c

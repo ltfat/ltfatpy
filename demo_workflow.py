@@ -24,8 +24,11 @@ ltfat.exit()
 #If you then want to continue, you need to restart the session.
 ltfat.restart()
 
+#to retrieve the synthesis matrix, you can send in an empty array
+#but you have to pass 'L' to ltfat.dgt.
+f = np.array([])
 try:
-    e = ltfat.dgt(f, g, a, M)
+    e = ltfat.dgt(f, g, a, M, L)
 except:
     print("this does not work, as the octave session is closed now")
     print("we need to restart Octave")
@@ -40,7 +43,7 @@ else:
     print("you need to restart Octave")
 
 
-
+f = np.random.randn(L, 1)
 #however, it might be more comfortable to use LTFAT as a context manager.a
 #this way, all related resources will be freed automatically
 with ltfat:
