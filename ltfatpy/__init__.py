@@ -164,7 +164,7 @@ class Ltfat():
         self._engine.eval('addpath("%s");' % filepath)
         self._engine.eval('addpath("%s");' % self.temp_dir)
         self._engine.eval('warning ("off", "all");')
-        self._engine.eval("pkg load ltfat")
+        self._engine.eval("ltfatpystart;")
 
     def feval(self, func_path, *func_args, **kwargs):
         """Run a function in Octave and return the result.
