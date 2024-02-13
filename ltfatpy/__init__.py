@@ -2,7 +2,7 @@
 
 #Using IO management from oct2py...
 #from oct2py.io import Cell, StructArray, read_file#, write_file
-from oct2py.dynamic import (
+from .dynamic import (
     OctavePtr,
     _make_function_ptr_instance,
     _make_user_class,
@@ -603,7 +603,7 @@ class Ltfat():
         cmd = 'exist("%s")' % name
         if not self._engine:
             msg = "Session is not open"
-            raise Oct2PyError(msg)
+            raise LtfatError(msg)
         resp = self._engine.eval(cmd, silent=True).strip()
         exist = int(resp.split()[-1])
         if exist == 0:
@@ -611,7 +611,7 @@ class Ltfat():
             resp = self._engine.eval(cmd, silent=True).strip()
             if "error:" in resp:
                 msg = 'Value "%s" does not exist in Octave workspace'
-                raise Oct2PyError(msg % name)
+                raise LtfatError(msg % name)
             else:
                 exist = 2
         return exist
