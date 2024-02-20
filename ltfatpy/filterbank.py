@@ -25,6 +25,7 @@ def filterbank(self, f,g,a, *args, nout = 1):
     c = self.feval('filterbank', f, g, a, *args, nout=nout)
     return c
 
+@register_method
 def ufilterbank(self, f,g,a, *args, nout = 1):
 
     if not f.any():

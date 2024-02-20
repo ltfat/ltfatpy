@@ -12,9 +12,8 @@ from .dynamic import (
 from .io import Cell, StructArray, read_file, write_file
 
 #these are all Python standard libs...
-import atexit
 import logging
-import os, sys
+import os, sys, atexit
 import os.path as osp
 import shutil
 import tempfile
