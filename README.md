@@ -1,6 +1,14 @@
 The repository is under development. Hence, everything written here is temporary.
 If you encounter any errors, please write an issue.
 
+
+Current functionality:
+------------------------
+
+- Gabor module
+- Filterbank module
+  
+
 Current requirements:
 ------------------------
 
