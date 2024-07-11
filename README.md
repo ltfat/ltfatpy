@@ -5,8 +5,8 @@ If you encounter any errors, please write an issue.
 Current functionality:
 ------------------------
 
-- Gabor module
-- Filterbank module
+- Gabor module (except for multidgtrealmp)
+- Filterbank module (except for filterbankconstphase)
   
 
 Current requirements:
