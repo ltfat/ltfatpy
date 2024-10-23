@@ -353,3 +353,10 @@ def waveletfilterbank(self, f, Ls, fs, fmin, fmax, bins, *args):
     #self.eval(inargs, buf1)
     #inargs = []
     #c = self.feval(inargs, 'filterbank', f, g, a, nout)
+
+@register_method
+def greasy(self, *args):
+    f = self.eval("f = greasy;")
+    f = self.pull('f')
+    return f
+ 
