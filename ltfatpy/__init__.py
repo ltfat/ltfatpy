@@ -32,6 +32,8 @@ filepath = os.path.join(bp, 'ltfatpy')
 sys.path.append(filepath)
 import gabor as Gabor
 import filterbank as Filterbank
+import fourier as Fourier
+import sigproc as Sigproc
 
 def add_methods_from(*modules):
     def decorator(Class):
@@ -43,6 +45,8 @@ def add_methods_from(*modules):
 
 @add_methods_from(Gabor)
 @add_methods_from(Filterbank)
+@add_methods_from(Fourier)
+@add_methods_from(Sigproc)
 class Ltfat():
 
     """Manages an Octave session. based on Oct2Py
