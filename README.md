@@ -1,6 +1,14 @@
 The repository is under development. Hence, everything written here is temporary.
 If you encounter any errors, please write an issue.
 
+
+Current functionality:
+------------------------
+
+- Gabor module (except for multidgtrealmp)
+- Filterbank module (except for filterbankconstphase)
+  
+
 Current requirements:
 ------------------------
 
@@ -71,3 +79,8 @@ works.
 4. Function handles (e.g. many filter functions 'g') are parsed by LTFATPY, and interpreted
 by Python as OctaveVariablePointers, but they can not be numerically evaluated. If you try
 to do so, you get an error.
+
+
+Credits
+------------------------
+Snippets of code have been copy-pasted from the oct2py package (MIT license). This is specified in the files where it happens.
