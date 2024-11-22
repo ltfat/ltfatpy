@@ -255,6 +255,13 @@ def filterbankconstphase(self, s, a, fc, tfr, *args, nout = 5):
     [c,newphase,usedmask,tgrad,fgrad] = self.feval('filterbankconstphase', s, a, fc, tfr,  *args, nout=nout)
     return c,newphase,usedmask,tgrad,fgrad
 
+#undocumented functionality
+@register_method
+def cent_freqs(self, g, *args, nout = 1):
+    out = self.feval('cent_freqs', g, *args, nout=nout)
+    return out
+
+
 #-------------------------------------------------------------------------
 #Some special filterbanks, as they might be useful for ML tasks
 @register_method
